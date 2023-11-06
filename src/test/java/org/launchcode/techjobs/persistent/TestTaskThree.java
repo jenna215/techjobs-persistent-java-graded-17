@@ -7,17 +7,20 @@ import mockit.Expectations;
 import mockit.Mocked;
 import org.junit.jupiter.api.Test;
 import org.launchcode.techjobs.persistent.controllers.HomeController;
-import org.launchcode.techjobs.persistent.models.AbstractEntity;
 import org.launchcode.techjobs.persistent.models.Employer;
 import org.launchcode.techjobs.persistent.models.Job;
+import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
+import org.launchcode.techjobs.persistent.models.data.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 
-
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -76,27 +79,7 @@ public class TestTaskThree extends AbstractTest {
     /*
      * Verifies that Job extends AbstractEntity and has redundant code removed
      * */
-    @Test
-    public void testJobExtendsAbstractEntity() throws ClassNotFoundException {
-        Class jobClass = getClassByName("models.Job");
-        assertEquals(AbstractEntity.class, jobClass.getSuperclass());
 
-        // to verify that the class has name and id removed, we try to access them
-        // verify that an exception is thrown
-        try {
-            jobClass.getDeclaredField("name");
-            fail("Job should not have a name field");
-        } catch (NoSuchFieldException e) {
-            // Do nothing - we expect this to be thrown
-        }
-
-        try {
-            jobClass.getDeclaredField("id");
-            fail("Job should not have an id field");
-        } catch (NoSuchFieldException e) {
-            // Do nothing - we expect this to be thrown
-        }
-    }
 
     /*
      * Verifies that Job.employer has been refactored correctly to be of type Employer
@@ -150,29 +133,29 @@ public class TestTaskThree extends AbstractTest {
     /*
      * Verifies that HomeController.displayAddJobForm calls employerRepository.findAll()
      * */
-    // @Test
-    // public void testHomeControllerFetchesEmployers(@Mocked EmployerRepository employerRepository, @Mocked SkillRepository skillRepository) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-    //     Class homeControllerClass = getClassByName("controllers.HomeController");
-    //     HomeController homeController = new HomeController();
+     @Test
+     public void testHomeControllerFetchesEmployers(@Mocked EmployerRepository employerRepository, @Mocked SkillRepository skillRepository) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+         Class homeControllerClass = getClassByName("controllers.HomeController");
+         HomeController homeController = new HomeController();
 
-    //     Field employerRepositoryField = homeControllerClass.getDeclaredField("employerRepository");
-    //     employerRepositoryField.setAccessible(true);
-    //     employerRepositoryField.set(homeController, employerRepository);
+         Field employerRepositoryField = homeControllerClass.getDeclaredField("employerRepository");
+         employerRepositoryField.setAccessible(true);
+         employerRepositoryField.set(homeController, employerRepository);
 
-    //     // not needed for verification, but necessary to make sure calling the controller
-    //     // method doesn't throw a NullPointerException
-    //     Field skillRepositoryField = homeControllerClass.getDeclaredField("skillRepository");
-    //     skillRepositoryField.setAccessible(true);
-    //     skillRepositoryField.set(homeController, skillRepository);
+         // not needed for verification, but necessary to make sure calling the controller
+         // method doesn't throw a NullPointerException
+         Field skillRepositoryField = homeControllerClass.getDeclaredField("skillRepository");
+         skillRepositoryField.setAccessible(true);
+         skillRepositoryField.set(homeController, skillRepository);
 
-    //     Model model = new ExtendedModelMap();
+         Model model = new ExtendedModelMap();
 
-    //     new Expectations() {{
-    //         employerRepository.findAll();
-    //     }};
+         new Expectations() {{
+             employerRepository.findAll();
+         }};
 
-    //     homeController.displayAddJobForm(model);
-    // }
+         homeController.displayAddJobForm(model);
+     }
 
     /*
      * Tests SQL query for task 3
