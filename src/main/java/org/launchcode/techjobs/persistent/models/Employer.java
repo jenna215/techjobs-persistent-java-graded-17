@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 public class Employer extends AbstractEntity{
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
-    @OneToMany(mappedBy = "employer")
+    @OneToMany()
     private List<Job> jobs = new ArrayList<>();
 
     @NotNull(message = "Location cannot be blank")
